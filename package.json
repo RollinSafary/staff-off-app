@@ -1,0 +1,23 @@
+{
+  "name": "react-typescript-firebase-monorepo-boilerplate",
+  "version": "1.0.0",
+  "description": "Monorepo boilerplate with react and firebase",
+  "scripts": {
+    "backend": "pnpm --filter backend run start",
+    "frontend": "pnpm --filter frontend run start",
+    "test": "pnpm --filter backend run test && pnpm --filter frontend run test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.11.0",
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "husky": "^8.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": "20"
+  }
+}

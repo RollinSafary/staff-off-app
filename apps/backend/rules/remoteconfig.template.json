@@ -1,0 +1,8 @@
+{
+  "conditions": [],
+  "parameters": {
+    "feature_flag": {
+      "defaultValue": { "value": "true" }
+    }
+  }
+}

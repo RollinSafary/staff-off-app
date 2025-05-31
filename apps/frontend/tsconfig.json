@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "types": ["vite/client", "node"],
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "jsx": "react-jsx",
+    "composite": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@assets/*": ["src/assets/*"],
+      "@store/*": ["src/store/*"],
+      "@reduxTypes/*": ["src/store/types/*"],
+      "@shared/*": ["src/components/shared/*"]
+    }
+  },
+  "include": ["src/**/*", "src/**/*.json"]
+}

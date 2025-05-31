@@ -1,0 +1,36 @@
+{
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8090
+    },
+    "database": {
+      "port": 9000
+    },
+    "ui": {
+      "enabled": true,
+      "port": 3030
+    },
+    "remoteconfig": {
+      "port": 9090
+    },
+    "singleProjectMode": true
+  },
+  "functions": {
+    "source": "."
+  },
+  "firestore": {
+    "rules": "rules/firestore.rules"
+  },
+  "database": {
+    "rules": "rules/database.rules.json"
+  },
+  "remoteconfig": {
+    "template": "rules/remoteconfig.template.json"
+  }
+}

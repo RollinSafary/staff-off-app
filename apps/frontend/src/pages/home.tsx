@@ -1,3 +1,9 @@
+import HomeContent from 'src/components/home';
+
 export const HomePage = () => {
-  return <>Home Page</>;
+  return (
+    <>
+      <HomeContent />
+    </>
+  );
 };

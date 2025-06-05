@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
-import { CheckboxLabel, Input } from '../styles';
+import React, { ChangeEvent } from 'react';
+import { CheckboxLabel } from '../styles';
 
-export default function CheckBox() {
-  const [agreement, setAgreement] = useState(false);
+interface IAgreementCheckboxProps {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label?: string;
+}
+
+const CheckBox: React.FC<IAgreementCheckboxProps> = ({
+  checked,
+  onChange,
+  label = 'I agree to the terms',
+}) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.checked);
+  };
 
   return (
     <CheckboxLabel>
-      <Input type="checkbox" checked={agreement} onChange={() => setAgreement(!agreement)} />
-      <span>I agree to the Terms and Conditions</span>
+      <input type="checkbox" checked={checked} onChange={handleChange} />
+      {label}
     </CheckboxLabel>
   );
-}
+};
+
+export default CheckBox;

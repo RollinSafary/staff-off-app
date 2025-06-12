@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { registrationSchema } from './validation/schema';
 import { countries, timezones } from './data/mock';
 import EmailField from './components/fields/EmailField';
 import CompanyNameField from './components/fields/CompanyNameField';
@@ -12,71 +12,101 @@ import ConfirmPasswordField from './components/fields/ConfirmPasswordField';
 import CheckBox from './components/CheckBox';
 import { Button, StyledForm, Wrapper } from './styles';
 
+type Errors = {
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  firstName?: string;
+  lastName?: string;
+  companyName?: string;
+  country?: string;
+  timezone?: string;
+  agreement?: string;
+};
+
 const RegistrationContent: React.FC = () => {
   const [email, setEmail] = useState('');
-  const [isEmailValid, setIsEmailValid] = useState(false);
-
   const [companyName, setCompanyName] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-
   const [country, setCountry] = useState('');
   const [timezone, setTimezone] = useState('');
-
   const [password, setPassword] = useState('');
-  const [isPasswordValid, setIsPasswordValid] = useState(false);
-
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(false);
-
   const [agreement, setAgreement] = useState(false);
 
-  const isFormValid = isEmailValid && isPasswordValid && isConfirmPasswordValid && agreement;
+  const [errors, setErrors] = useState<Errors>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid) {
-      alert('Please fix errors and accept the agreement.');
+
+    const formData = {
+      email,
+      password,
+      confirmPassword,
+      firstName,
+      lastName,
+      companyName,
+      country,
+      timezone,
+      agreement,
+    };
+
+    const result = registrationSchema.safeParse(formData);
+
+    if (!result.success) {
+      // Форматируем ошибки для удобного показа
+      const formattedErrors: Errors = {};
+      const errorFormat = result.error.format();
+
+      for (const key in errorFormat) {
+        const errorObj = (errorFormat as any)[key];
+        if (errorObj?._errors && errorObj._errors.length > 0) {
+          formattedErrors[key as keyof Errors] = errorObj._errors[0];
+        }
+      }
+      setErrors(formattedErrors);
+      alert('Please fix validation errors.');
       return;
     }
-    alert('Form submitted!');
-    // your submit logic here
+
+    setErrors({});
+    alert('Form is valid. Submitting...');
+    // тут твоя логика отправки формы
   };
 
   return (
     <Wrapper>
       <StyledForm onSubmit={handleSubmit}>
-        <EmailField
-          value={email}
-          onChange={(val, valid) => {
-            setEmail(val);
-            setIsEmailValid(valid);
-          }}
+        <EmailField value={email} onChange={setEmail} error={errors.email} />
+        <CompanyNameField
+          value={companyName}
+          onChange={setCompanyName}
+          error={errors.companyName}
         />
-        <CompanyNameField value={companyName} onChange={setCompanyName} />
-        <FirstNameField value={firstName} onChange={setFirstName} />
-        <LastNameField value={lastName} onChange={setLastName} />
-        <CountrySelect options={countries} value={country} onChange={setCountry} />
-        <TimezoneSelect options={timezones} value={timezone} onChange={setTimezone} />
-        <PasswordField
-          value={password}
-          onChange={(val, valid) => {
-            setPassword(val);
-            setIsPasswordValid(valid);
-          }}
+        <FirstNameField value={firstName} onChange={setFirstName} error={errors.firstName} />
+        <LastNameField value={lastName} onChange={setLastName} error={errors.lastName} />
+        <CountrySelect
+          options={countries}
+          value={country}
+          onChange={setCountry}
+          error={errors.country}
         />
+        <TimezoneSelect
+          options={timezones}
+          value={timezone}
+          onChange={setTimezone}
+          error={errors.timezone}
+        />
+        <PasswordField value={password} onChange={setPassword} error={errors.password} />
         <ConfirmPasswordField
           value={confirmPassword}
           originalPassword={password}
-          onChange={(val, valid) => {
-            setConfirmPassword(val);
-            setIsConfirmPasswordValid(valid);
-          }}
+          onChange={(val, valid) => setConfirmPassword(val)}
+          error={errors.confirmPassword}
         />
-        <CheckBox checked={agreement} onChange={setAgreement} />
-        <Button type="submit" disabled={!isFormValid}>
-          Sign Up
-        </Button>
+        <CheckBox checked={agreement} onChange={setAgreement} error={errors.agreement} />
+        <Button type="submit">Sign Up</Button>
       </StyledForm>
     </Wrapper>
   );

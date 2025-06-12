@@ -1,29 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from '../../styles';
+import { z } from 'zod';
 
 interface PasswordFieldProps {
   value: string;
-  onChange: (value: string, isValid: boolean) => void;
+  onChange: (value: string) => void;
+  error?: string;
 }
 
-const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+const passwordSchema = z.string().trim().min(8, 'Password must be at least 8 characters');
 
-const PasswordField: React.FC<PasswordFieldProps> = ({ value, onChange }) => {
-  const [error, setError] = useState<string>('');
+const PasswordField: React.FC<PasswordFieldProps> = ({ value, onChange, error }) => {
+  const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
-    const isValid = passwordRegex.test(value);
-    setError(
-      isValid || value === ''
-        ? ''
-        : 'Password must be 8+ chars, include uppercase, number and special char'
-    );
-    onChange(value, isValid);
-  }, [value, onChange]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value, passwordRegex.test(e.target.value));
-  };
+    const result = passwordSchema.safeParse(value);
+    if (!result.success) {
+      setLocalError(result.error.errors[0].message);
+    } else {
+      setLocalError(null);
+    }
+  }, [value]);
 
   return (
     <>
@@ -31,10 +28,12 @@ const PasswordField: React.FC<PasswordFieldProps> = ({ value, onChange }) => {
         type="password"
         placeholder="Password"
         value={value}
-        onChange={handleChange}
-        style={{ borderColor: error ? 'red' : undefined }}
+        onChange={(e) => onChange(e.target.value)}
+        style={{ borderColor: error || localError ? 'red' : undefined }}
       />
-      {error && <div style={{ color: 'red', fontSize: 12 }}>{error}</div>}
+      {(error || localError) && (
+        <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>
+      )}
     </>
   );
 };

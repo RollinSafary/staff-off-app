@@ -120,6 +120,9 @@ importers:
       styled-components:
         specifier: ^6.1.18
         version: 6.1.18(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1)
+      zod:
+        specifier: ^3.25.42
+        version: 3.25.42
     devDependencies:
       '@types/node':
         specifier: ^22.15.21

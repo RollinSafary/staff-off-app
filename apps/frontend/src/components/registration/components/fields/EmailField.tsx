@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from '../../styles';
+import { z } from 'zod';
 
 interface EmailFieldProps {
   value: string;
-  onChange: (value: string, isValid: boolean) => void;
+  onChange: (value: string) => void;
+  error?: string;
 }
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailSchema = z.string().trim().email('Please enter a valid email address');
 
-const EmailField: React.FC<EmailFieldProps> = ({ value, onChange }) => {
-  const [error, setError] = useState<string>('');
+const EmailField: React.FC<EmailFieldProps> = ({ value, onChange, error }) => {
+  const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
-    const isValid = emailRegex.test(value);
-    setError(isValid || value === '' ? '' : 'Invalid email format');
-    onChange(value, isValid);
-  }, [value, onChange]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value, emailRegex.test(e.target.value));
-  };
+    const result = emailSchema.safeParse(value);
+    if (!result.success) {
+      setLocalError(result.error.errors[0].message);
+    } else {
+      setLocalError(null);
+    }
+  }, [value]);
 
   return (
     <>
@@ -27,10 +28,12 @@ const EmailField: React.FC<EmailFieldProps> = ({ value, onChange }) => {
         type="email"
         placeholder="Email"
         value={value}
-        onChange={handleChange}
-        style={{ borderColor: error ? 'red' : undefined }}
+        onChange={(e) => onChange(e.target.value)}
+        style={{ borderColor: error || localError ? 'red' : undefined }}
       />
-      {error && <div style={{ color: 'red', fontSize: 12 }}>{error}</div>}
+      {(error || localError) && (
+        <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>
+      )}
     </>
   );
 };

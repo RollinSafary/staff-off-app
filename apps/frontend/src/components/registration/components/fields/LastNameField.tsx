@@ -6,23 +6,27 @@ interface LastNameFieldProps {
   value?: string;
   onChange: (value: string) => void;
   error?: string;
+  showErrors?: boolean;
 }
 
 const lastNameSchema = z.string().trim().min(1, 'Last name is required');
 
-const LastNameField: React.FC<LastNameFieldProps> = ({ value = '', onChange, error }) => {
+const LastNameField: React.FC<LastNameFieldProps> = ({
+  value = '',
+  onChange,
+  error,
+  showErrors = false,
+}) => {
   const [lastName, setLastName] = useState(value);
   const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
     onChange(lastName);
     const result = lastNameSchema.safeParse(lastName);
-    if (!result.success) {
-      setLocalError(result.error.errors[0].message);
-    } else {
-      setLocalError(null);
-    }
+    setLocalError(result.success ? null : result.error.errors[0].message);
   }, [lastName, onChange]);
+
+  const shouldShowError = showErrors && (error || localError);
 
   return (
     <>
@@ -31,11 +35,9 @@ const LastNameField: React.FC<LastNameFieldProps> = ({ value = '', onChange, err
         placeholder="Last Name"
         value={lastName}
         onChange={(e) => setLastName(e.target.value)}
-        style={{ borderColor: error || localError ? 'red' : undefined }}
+        style={{ borderColor: shouldShowError ? 'red' : undefined }}
       />
-      {(error || localError) && (
-        <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>
-      )}
+      {shouldShowError && <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>}
     </>
   );
 };

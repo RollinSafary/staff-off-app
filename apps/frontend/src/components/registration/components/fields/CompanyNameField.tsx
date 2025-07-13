@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Input } from '../../styles';
 import { z } from 'zod';
 
-interface CompanyNameFieldProps {
+interface Props {
   value?: string;
   onChange: (value: string) => void;
   error?: string;
+  showErrors?: boolean; // 👈 новый проп для управления отображением ошибок
 }
 
 const companyNameSchema = z.string().trim().min(1, 'Company name is required');
 
-const CompanyNameField: React.FC<CompanyNameFieldProps> = ({ value = '', onChange, error }) => {
+const CompanyNameField: React.FC<Props> = ({ value = '', onChange, error, showErrors = false }) => {
   const [companyName, setCompanyName] = useState(value);
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -24,6 +25,8 @@ const CompanyNameField: React.FC<CompanyNameFieldProps> = ({ value = '', onChang
     }
   }, [companyName, onChange]);
 
+  const shouldShowError = showErrors && (error || localError); // 👈 показываем ошибку только если showErrors === true
+
   return (
     <>
       <Input
@@ -31,11 +34,9 @@ const CompanyNameField: React.FC<CompanyNameFieldProps> = ({ value = '', onChang
         placeholder="Company Name"
         value={companyName}
         onChange={(e) => setCompanyName(e.target.value)}
-        style={{ borderColor: error || localError ? 'red' : undefined }}
+        style={{ borderColor: shouldShowError ? 'red' : undefined }}
       />
-      {(error || localError) && (
-        <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>
-      )}
+      {shouldShowError && <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>}
     </>
   );
 };

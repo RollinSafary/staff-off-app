@@ -6,11 +6,17 @@ interface PasswordFieldProps {
   value: string;
   onChange: (value: string) => void;
   error?: string;
+  showErrors?: boolean;
 }
 
 const passwordSchema = z.string().trim().min(8, 'Password must be at least 8 characters');
 
-const PasswordField: React.FC<PasswordFieldProps> = ({ value, onChange, error }) => {
+const PasswordField: React.FC<PasswordFieldProps> = ({
+  value,
+  onChange,
+  error,
+  showErrors = false,
+}) => {
   const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -22,6 +28,8 @@ const PasswordField: React.FC<PasswordFieldProps> = ({ value, onChange, error })
     }
   }, [value]);
 
+  const shouldShowError = showErrors && (error || localError); // 👈 контролируем отображение
+
   return (
     <>
       <Input
@@ -29,11 +37,9 @@ const PasswordField: React.FC<PasswordFieldProps> = ({ value, onChange, error })
         placeholder="Password"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        style={{ borderColor: error || localError ? 'red' : undefined }}
+        style={{ borderColor: shouldShowError ? 'red' : undefined }}
       />
-      {(error || localError) && (
-        <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>
-      )}
+      {shouldShowError && <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>}
     </>
   );
 };

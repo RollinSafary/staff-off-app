@@ -6,11 +6,12 @@ interface EmailFieldProps {
   value: string;
   onChange: (value: string) => void;
   error?: string;
+  showErrors?: boolean;
 }
 
 const emailSchema = z.string().trim().email('Please enter a valid email address');
 
-const EmailField: React.FC<EmailFieldProps> = ({ value, onChange, error }) => {
+const EmailField: React.FC<EmailFieldProps> = ({ value, onChange, error, showErrors = false }) => {
   const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -22,6 +23,8 @@ const EmailField: React.FC<EmailFieldProps> = ({ value, onChange, error }) => {
     }
   }, [value]);
 
+  const shouldShowError = showErrors && (error || localError);
+
   return (
     <>
       <Input
@@ -29,11 +32,9 @@ const EmailField: React.FC<EmailFieldProps> = ({ value, onChange, error }) => {
         placeholder="Email"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        style={{ borderColor: error || localError ? 'red' : undefined }}
+        style={{ borderColor: shouldShowError ? 'red' : undefined }}
       />
-      {(error || localError) && (
-        <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>
-      )}
+      {shouldShowError && <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>}
     </>
   );
 };

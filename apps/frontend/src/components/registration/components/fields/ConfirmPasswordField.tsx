@@ -7,6 +7,7 @@ interface ConfirmPasswordFieldProps {
   originalPassword: string;
   onChange: (value: string, isValid: boolean) => void;
   error?: string;
+  showErrors?: boolean; // 👈 добавляем флаг
 }
 
 const confirmPasswordSchema = z.string().trim().min(8, 'Password must be at least 8 characters');
@@ -16,6 +17,7 @@ const ConfirmPasswordField: React.FC<ConfirmPasswordFieldProps> = ({
   originalPassword,
   onChange,
   error,
+  showErrors = false, // 👈 по умолчанию false
 }) => {
   const [confirmPassword, setConfirmPassword] = useState(value);
   const [localError, setLocalError] = useState<string | null>(null);
@@ -34,6 +36,8 @@ const ConfirmPasswordField: React.FC<ConfirmPasswordFieldProps> = ({
     }
   }, [confirmPassword, originalPassword, onChange]);
 
+  const shouldShowError = showErrors && (error || localError); // 👈 контролируем отображение
+
   return (
     <>
       <Input
@@ -41,11 +45,9 @@ const ConfirmPasswordField: React.FC<ConfirmPasswordFieldProps> = ({
         placeholder="Confirm Password"
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
-        style={{ borderColor: error || localError ? 'red' : undefined }}
+        style={{ borderColor: shouldShowError ? 'red' : undefined }}
       />
-      {(error || localError) && (
-        <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>
-      )}
+      {shouldShowError && <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>}
     </>
   );
 };

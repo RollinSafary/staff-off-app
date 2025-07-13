@@ -1,9 +1,9 @@
-import Registration from 'src/components/registration';
+import RegistrationContent from 'src/components/registration';
 
 export const RegistrationPage = () => {
   return (
     <>
-      <Registration />
+      <RegistrationContent />
     </>
   );
 };

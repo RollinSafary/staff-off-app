@@ -7,11 +7,18 @@ interface CountrySelectProps {
   value?: string;
   onChange: (value: string) => void;
   error?: string;
+  showErrors?: boolean; // 👈 добавляем флаг
 }
 
 const countrySchema = z.string().min(1, 'Country is required');
 
-const CountrySelect: React.FC<CountrySelectProps> = ({ options, value = '', onChange, error }) => {
+const CountrySelect: React.FC<CountrySelectProps> = ({
+  options,
+  value = '',
+  onChange,
+  error,
+  showErrors = false, // 👈 по умолчанию false
+}) => {
   const [country, setCountry] = useState(value);
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -25,12 +32,14 @@ const CountrySelect: React.FC<CountrySelectProps> = ({ options, value = '', onCh
     }
   }, [country, onChange]);
 
+  const shouldShowError = showErrors && (error || localError); // 👈 контролируем отображение
+
   return (
     <>
       <Select
         value={country}
         onChange={(e) => setCountry(e.target.value)}
-        style={{ borderColor: error || localError ? 'red' : undefined }}
+        style={{ borderColor: shouldShowError ? 'red' : undefined }}
       >
         <option value="" disabled>
           Select Country
@@ -41,9 +50,7 @@ const CountrySelect: React.FC<CountrySelectProps> = ({ options, value = '', onCh
           </option>
         ))}
       </Select>
-      {(error || localError) && (
-        <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>
-      )}
+      {shouldShowError && <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>}
     </>
   );
 };

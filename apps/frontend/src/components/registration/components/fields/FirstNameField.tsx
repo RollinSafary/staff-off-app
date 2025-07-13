@@ -6,11 +6,17 @@ interface FirstNameFieldProps {
   value?: string;
   onChange: (value: string) => void;
   error?: string;
+  showErrors?: boolean; // 👈 добавляем флаг
 }
 
 const firstNameSchema = z.string().trim().min(1, 'First name is required');
 
-const FirstNameField: React.FC<FirstNameFieldProps> = ({ value = '', onChange, error }) => {
+const FirstNameField: React.FC<FirstNameFieldProps> = ({
+  value = '',
+  onChange,
+  error,
+  showErrors = false,
+}) => {
   const [firstName, setFirstName] = useState(value);
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -24,6 +30,8 @@ const FirstNameField: React.FC<FirstNameFieldProps> = ({ value = '', onChange, e
     }
   }, [firstName, onChange]);
 
+  const shouldShowError = showErrors && (error || localError);
+
   return (
     <>
       <Input
@@ -31,13 +39,10 @@ const FirstNameField: React.FC<FirstNameFieldProps> = ({ value = '', onChange, e
         placeholder="First Name"
         value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
-        style={{ borderColor: error || localError ? 'red' : undefined }}
+        style={{ borderColor: shouldShowError ? 'red' : undefined }}
       />
-      {(error || localError) && (
-        <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>
-      )}
+      {shouldShowError && <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>}
     </>
   );
 };
-
 export default FirstNameField;

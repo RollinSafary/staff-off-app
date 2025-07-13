@@ -1,2 +1,2 @@
-export * from './endpoints/sign-up';
+export * from './endpoints/users/createUser/types';
 export * from './firebase/config';

@@ -7,6 +7,7 @@ interface TimezoneSelectProps {
   value?: string;
   onChange: (value: string) => void;
   error?: string;
+  showErrors?: boolean; // 👈 добавляем флаг
 }
 
 const timezoneSchema = z.string().min(1, 'Timezone is required');
@@ -16,6 +17,7 @@ const TimezoneSelect: React.FC<TimezoneSelectProps> = ({
   value = '',
   onChange,
   error,
+  showErrors = false, // 👈 по умолчанию false
 }) => {
   const [timezone, setTimezone] = useState(value);
   const [localError, setLocalError] = useState<string | null>(null);
@@ -30,12 +32,14 @@ const TimezoneSelect: React.FC<TimezoneSelectProps> = ({
     }
   }, [timezone, onChange]);
 
+  const shouldShowError = showErrors && (error || localError); // 👈 контролируем отображение
+
   return (
     <>
       <Select
         value={timezone}
         onChange={(e) => setTimezone(e.target.value)}
-        style={{ borderColor: error || localError ? 'red' : undefined }}
+        style={{ borderColor: shouldShowError ? 'red' : undefined }}
       >
         <option value="" disabled>
           Select Timezone
@@ -46,9 +50,7 @@ const TimezoneSelect: React.FC<TimezoneSelectProps> = ({
           </option>
         ))}
       </Select>
-      {(error || localError) && (
-        <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>
-      )}
+      {shouldShowError && <div style={{ color: 'red', fontSize: 12 }}>{error || localError}</div>}
     </>
   );
 };

@@ -22,6 +22,7 @@ module.exports = {
   ignorePatterns: ["/lib/**/*", "/generated/**/*", ".eslintrc.js"],
   plugins: ["@typescript-eslint", "import", "prettier"], // ✅ add prettier here
   rules: {
+    "new-cap": 0,
     quotes: ["error", "double"],
     indent: ["error", 2],
     "import/no-unresolved": 0,

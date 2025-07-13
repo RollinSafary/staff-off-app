@@ -1,20 +1,16 @@
-import { existsSync } from "fs";
 import { spawn } from "child_process";
 
-const seedPath = "./seed";
-const backupPath = "./emulator-backup";
+const buildWatcher = spawn("pnpm", ["run", "build:watch"], {
+  stdio: "inherit",
+  shell: true,
+});
 
-const args = ["emulators:start", "--export-on-exit=./emulator-backup"];
+const firebaseEmulator = spawn("firebase", ["emulators:start"], {
+  stdio: "inherit",
+  shell: true,
+});
 
-if (existsSync(backupPath)) {
-  args.push(`--import=${backupPath}`);
-}
-if (existsSync(seedPath)) {
-  args.push(`--import=${seedPath}`);
-}
-
-const proc = spawn("firebase", args, { stdio: "inherit", shell: true });
-
-proc.on("exit", (code: number) => {
-  process.exit(code);
+firebaseEmulator.on("exit", (code) => {
+  buildWatcher.kill();
+  process.exit(code ?? 0);
 });
